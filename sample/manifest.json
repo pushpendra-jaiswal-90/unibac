@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-10-30T02:40:31",
+  "seed": 42,
+  "snapshot_date": "2026-10-01",
+  "loans": 1000,
+  "repayments": 12000,
+  "activity": 3500,
+  "scenarios": [
+    {
+      "code": "CURRENT",
+      "count": 500
+    },
+    {
+      "code": "EARLY_DPD",
+      "count": 180
+    },
+    {
+      "code": "MID_DPD",
+      "count": 100
+    },
+    {
+      "code": "NPA",
+      "count": 70
+    },
+    {
+      "code": "LATE_DPD",
+      "count": 70
+    },
+    {
+      "code": "CHRONIC_BOUNCER",
+      "count": 40
+    },
+    {
+      "code": "BROKEN_PTP",
+      "count": 20
+    },
+    {
+      "code": "NO_CONTACT",
+      "count": 20
+    }
+  ],
+  "applicants": [
+    "APP001",
+    "APP002",
+    "APP003"
+  ]
+}

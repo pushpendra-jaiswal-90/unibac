@@ -16,6 +16,8 @@ dependencies = [
     "mcp>=1.0.0",
     # Agent runtime
     "anthropic>=0.39",
+    # Sandbox / synthetic data
+    "duckdb>=1.1",
 ]
 
 [project.optional-dependencies]
@@ -27,8 +29,9 @@ dev = [
 ]
 
 [project.scripts]
-lbi-mcp   = "unibac_integrations.mcp_server.server:main"
-lbi-agent = "unibac_integrations.agent.main:main"
+lbi-mcp         = "unibac_integrations.mcp_server.server:main"
+lbi-agent       = "unibac_integrations.agent.main:main"
+lbi-sandbox-gen = "unibac_integrations.sandbox.generate:main"
 
 [build-system]
 requires      = ["hatchling"]
