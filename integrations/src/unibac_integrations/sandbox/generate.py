@@ -20,6 +20,7 @@ from pathlib import Path
 
 import duckdb
 
+from .applicants import PROFILES, write_applicants
 from .scenarios import BRANCHES, COLLECTORS, PRODUCTS, SCENARIOS, Scenario
 
 SEED = 42
@@ -147,47 +148,6 @@ def _generate_activity(loans: list[Loan], scenario_map: dict[str, Scenario], rng
     return rows
 
 
-# ---- Applicant files for CAM builder sandbox ----------------------------------
-
-APPLICANT_PROFILES = [
-    # Strong file — should APPROVE
-    {
-        "id": "APP001",
-        "bank":  {"avg_monthly_credit": "850000", "avg_monthly_debit": "720000",
-                  "bounce_count": 0, "min_eod_balance": "125000"},
-        "cibil": {"score": 782, "active_accounts": 3, "overdue_amount": "0", "enquiries_last_6m": 1},
-        "gst":   {"avg_monthly_turnover": "1200000", "filing_regularity_pct": "100",
-                  "last_filed_period": "2026-09"},
-    },
-    # Borderline file — should REFER
-    {
-        "id": "APP002",
-        "bank":  {"avg_monthly_credit": "420000", "avg_monthly_debit": "395000",
-                  "bounce_count": 4, "min_eod_balance": "8000"},
-        "cibil": {"score": 668, "active_accounts": 5, "overdue_amount": "25000", "enquiries_last_6m": 6},
-        "gst":   {"avg_monthly_turnover": "480000", "filing_regularity_pct": "75",
-                  "last_filed_period": "2026-08"},
-    },
-    # Weak file — should DECLINE
-    {
-        "id": "APP003",
-        "bank":  {"avg_monthly_credit": "180000", "avg_monthly_debit": "195000",
-                  "bounce_count": 9, "min_eod_balance": "-12000"},
-        "cibil": {"score": 548, "active_accounts": 7, "overdue_amount": "85000", "enquiries_last_6m": 11},
-        "gst":   {"avg_monthly_turnover": "150000", "filing_regularity_pct": "40",
-                  "last_filed_period": "2026-05"},
-    },
-]
-
-
-def _write_applicants(out: Path) -> None:
-    for profile in APPLICANT_PROFILES:
-        d = out / "applicants" / profile["id"]
-        d.mkdir(parents=True, exist_ok=True)
-        for name in ("bank", "cibil", "gst"):
-            (d / f"{name}.json").write_text(json.dumps(profile[name], indent=2) + "\n")
-
-
 # ---- Main entry point ---------------------------------------------------------
 
 
@@ -285,7 +245,7 @@ def generate(out: Path) -> None:
 
     con.close()
 
-    _write_applicants(out)
+    applicant_ids = write_applicants(out, rng)
 
     manifest = {
         "generated_at":  datetime.now().isoformat(timespec="seconds"),
@@ -295,7 +255,7 @@ def generate(out: Path) -> None:
         "repayments":    len(repayments),
         "activity":      len(activity),
         "scenarios":     [{"code": code, "count": n} for code, n in summary],
-        "applicants":    [p["id"] for p in APPLICANT_PROFILES],
+        "applicants":    applicant_ids,
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 

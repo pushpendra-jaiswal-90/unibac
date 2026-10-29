@@ -209,8 +209,12 @@ uploads/
 *.csv
 *.xlsx
 *.xls
+*.pdf
 !shared/schemas/*.csv
 !sample/**/*.csv
+!sample/**/*.xlsx
+!sample/**/*.pdf
+!docs/*.pdf
 
 ### Secrets
 *.pem

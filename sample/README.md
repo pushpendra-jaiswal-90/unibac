@@ -17,7 +17,7 @@ regenerating produces byte-identical files.
 | `csv/repayments.csv`                | File B — 12 months of EMI history (12,000 rows).         |
 | `csv/collection_activity.csv`       | File C — contact attempts for delinquent accounts.       |
 | `csv/scenario_tag.csv`              | Ground-truth scenario label per loan (not shipped to the engine). |
-| `applicants/APP00{1,2,3}/`          | Parsed bank / CIBIL / GST JSONs for CAM builder tests.   |
+| `applicants/APP00{1,2,3}/`          | Raw-format applicant files: `bank_statement.xlsx` (HDFC-style account statement), `cibil_report.pdf` (score + accounts + enquiries), `gstr3b.xlsx` (GSTR-3B summary + GSTR-1 B2B tab). |
 
 ## Scenario mix (1,000 borrowers)
 
@@ -47,14 +47,26 @@ cd integrations && pip install -e .
 lbi-sandbox-gen --out ../sample
 ```
 
-## Smoke-test the Rust CAM builder
+## Smoke-test the full CAM pipeline
+
+The raw applicant files feed the Python parsers; the parsed JSON is what the
+Rust CAM builder consumes.
 
 ```bash
+# 1. Parse raw inputs → JSON (via the Python parsers / MCP tools)
+python -m unibac_integrations.parsers.bank_statement \
+    sample/applicants/APP001/bank_statement.xlsx > /tmp/bank.json
+python -m unibac_integrations.parsers.cibil        \
+    sample/applicants/APP001/cibil_report.pdf      > /tmp/cibil.json
+python -m unibac_integrations.parsers.gst          \
+    sample/applicants/APP001/gstr3b.xlsx           > /tmp/gst.json
+
+# 2. Build the CAM
 cd core && cargo build --release
 ./target/release/lbi-core cam \
-    --bank  ../sample/applicants/APP001/bank.json \
-    --cibil ../sample/applicants/APP001/cibil.json \
-    --gst   ../sample/applicants/APP001/gst.json \
+    --bank  /tmp/bank.json \
+    --cibil /tmp/cibil.json \
+    --gst   /tmp/gst.json \
     --out   /tmp/cam-app001.json
 cat /tmp/cam-app001.json
 ```
