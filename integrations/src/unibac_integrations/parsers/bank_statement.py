@@ -24,15 +24,17 @@ from pathlib import Path
 from openpyxl import load_workbook
 from pydantic import BaseModel, Field
 
+from ._types import JsonDecimal
+
 _BOUNCE_RX = re.compile(r"(RETURN|BOUNCE|INSUFFICIENT|REVERSAL|DISHONOUR)", re.IGNORECASE)
 _REQUIRED_HEADERS = {"date", "narration", "withdrawal amt.", "deposit amt.", "closing balance"}
 
 
 class BankSummary(BaseModel):
-    avg_monthly_credit: Decimal = Field(default=Decimal(0))
-    avg_monthly_debit: Decimal = Field(default=Decimal(0))
+    avg_monthly_credit: JsonDecimal = Field(default=Decimal(0))
+    avg_monthly_debit: JsonDecimal = Field(default=Decimal(0))
     bounce_count: int = 0
-    min_eod_balance: Decimal = Field(default=Decimal(0))
+    min_eod_balance: JsonDecimal = Field(default=Decimal(0))
     months_observed: int = 0
 
 

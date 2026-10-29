@@ -21,6 +21,8 @@ from pathlib import Path
 import pdfplumber
 from pydantic import BaseModel, Field
 
+from ._types import JsonDecimal
+
 _SCORE_RX = re.compile(r"CIBIL\s+SCORE\s+(\d{3})")
 _INT_RX   = re.compile(r"[\d,]+")
 
@@ -28,7 +30,7 @@ _INT_RX   = re.compile(r"[\d,]+")
 class CibilSummary(BaseModel):
     score: int | None = None
     active_accounts: int = 0
-    overdue_amount: Decimal = Field(default=Decimal(0))
+    overdue_amount: JsonDecimal = Field(default=Decimal(0))
     enquiries_last_6m: int = 0
 
 

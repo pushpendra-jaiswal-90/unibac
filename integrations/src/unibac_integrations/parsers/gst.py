@@ -23,13 +23,15 @@ from pathlib import Path
 from openpyxl import load_workbook
 from pydantic import BaseModel, Field
 
+from ._types import JsonDecimal
+
 _REQUIRED = {"return period", "filed on", "outward taxable supplies"}
 _PERIOD_RX = re.compile(r"(\d{1,2})[-/](\d{4})")  # MM-YYYY or MM/YYYY
 
 
 class GstSummary(BaseModel):
-    avg_monthly_turnover: Decimal = Field(default=Decimal(0))
-    filing_regularity_pct: Decimal = Field(default=Decimal(0))
+    avg_monthly_turnover: JsonDecimal = Field(default=Decimal(0))
+    filing_regularity_pct: JsonDecimal = Field(default=Decimal(0))
     last_filed_period: str | None = None
     periods_observed: int = 0
 
