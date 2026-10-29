@@ -8,9 +8,6 @@ name := "lbi-frontend-scalajs"
 
 scalaJSUseMainModuleInitializer := true
 
-// Emit a single ES module next to index.html.
-scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
-
 libraryDependencies ++= Seq(
   "com.raquo"     %%% "laminar"       % "17.1.0",
   "io.circe"      %%% "circe-core"    % "0.14.10",

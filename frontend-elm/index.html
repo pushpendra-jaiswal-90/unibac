@@ -9,7 +9,22 @@
 <div id="app"></div>
 <script src="app.js"></script>
 <script>
-  Elm.Main.init({ node: document.getElementById("app") });
+  const appEl = document.getElementById("app");
+  const app = Elm.Main.init({ node: appEl });
+
+  // Minimal WebSocket shim driven by three Elm ports.
+  let sock = null;
+  app.ports.wsConnect.subscribe((url) => {
+    if (sock) try { sock.close(); } catch (_) {}
+    sock = new WebSocket(url);
+    sock.onmessage = (ev) => app.ports.wsRecv.send(ev.data);
+    sock.onopen    = () => app.ports.wsRecv.send(JSON.stringify({ type: "ready" }));
+    sock.onclose   = () => app.ports.wsRecv.send(JSON.stringify({ type: "error", message: "disconnected" }));
+    sock.onerror   = () => app.ports.wsRecv.send(JSON.stringify({ type: "error", message: "websocket error" }));
+  });
+  app.ports.wsSend.subscribe((data) => {
+    if (sock && sock.readyState === 1) sock.send(data);
+  });
 </script>
 </body>
 </html>

@@ -12,6 +12,7 @@ object Main:
   private val dashboard  = Var(Map.empty[String, BigDecimal])
   private val selected   = Var(Option.empty[WorklistItem])
   private val errorMsg   = Var(Option.empty[String])
+  private val chat       = new Chat()
 
   private def refresh(t: String): Unit =
     errorMsg.set(None)
@@ -48,7 +49,8 @@ object Main:
         cls := "cols",
         worklistTable(),
         detailPanel()
-      )
+      ),
+      chat.view
     )
 
   private def dashboardPanel(): HtmlElement =

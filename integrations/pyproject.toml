@@ -19,6 +19,10 @@ dependencies = [
     # Sandbox / synthetic data
     "duckdb>=1.1",
     "reportlab>=4.2",
+    # Agent chat server
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "openai>=1.50",
 ]
 
 [project.optional-dependencies]
@@ -32,6 +36,7 @@ dev = [
 [project.scripts]
 lbi-mcp         = "unibac_integrations.mcp_server.server:main"
 lbi-agent       = "unibac_integrations.agent.main:main"
+lbi-agent-serve = "unibac_integrations.agent.server:main"
 lbi-sandbox-gen = "unibac_integrations.sandbox.generate:main"
 
 [build-system]
