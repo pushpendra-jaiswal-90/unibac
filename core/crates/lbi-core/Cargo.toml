@@ -1,0 +1,21 @@
+[package]
+name    = "lbi-core"
+version.workspace    = true
+edition.workspace    = true
+rust-version.workspace = true
+license.workspace    = true
+
+[[bin]]
+name = "lbi-core"
+path = "src/main.rs"
+
+[dependencies]
+processing      = { path = "../processing" }
+okf-generator   = { path = "../okf-generator" }
+cam-builder     = { path = "../cam-builder" }
+anyhow.workspace    = true
+clap.workspace      = true
+serde.workspace     = true
+serde_json.workspace = true
+tracing.workspace   = true
+tracing-subscriber.workspace = true
