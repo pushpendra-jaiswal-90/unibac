@@ -1,0 +1,24 @@
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.4 -apple-system, system-ui, sans-serif; color: #222; background: #fafafa; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+h1 { font-size: 20px; margin: 0; }
+.tenant input { padding: 6px 8px; margin: 0 6px; border: 1px solid #ccc; border-radius: 4px; }
+.tenant button { padding: 6px 12px; border: 1px solid #333; background: #fff; border-radius: 4px; cursor: pointer; }
+.err { background: #fdd; color: #900; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.card { background: #fff; border: 1px solid #e0e0e0; padding: 14px; border-radius: 6px; }
+.card .k { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+.card .v { font-size: 24px; font-weight: 600; margin-top: 4px; }
+.cols { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+table.worklist { width: 100%; background: #fff; border-collapse: collapse; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; }
+.worklist th, .worklist td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+.worklist th { background: #f3f3f3; font-size: 12px; text-transform: uppercase; color: #555; }
+.worklist tr.row { cursor: pointer; }
+.worklist tr.row:hover { background: #f8f8f8; }
+.worklist tr.selected { background: #eef5ff; }
+.detail { background: #fff; border: 1px solid #e0e0e0; padding: 16px; border-radius: 6px; }
+.detail h3 { margin: 0 0 6px 0; }
+.detail h4 { margin: 12px 0 4px 0; font-size: 12px; text-transform: uppercase; color: #555; }
+.detail ul { margin: 0; padding-left: 18px; }
+.muted { color: #999; font-style: italic; }

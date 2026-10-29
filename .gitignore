@@ -221,3 +221,7 @@ uploads/
 *.key
 .env.local
 
+
+### Elm (frontend-elm build artefacts)
+elm-stuff/
+frontend-elm/app.js

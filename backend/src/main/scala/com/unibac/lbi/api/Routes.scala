@@ -8,6 +8,7 @@ import org.http4s.*
 import org.http4s.circe.*
 import org.http4s.circe.CirceEntityCodec.*
 import org.http4s.dsl.Http4sDsl
+import org.typelevel.ci.CIStringSyntax
 
 import com.unibac.lbi.audit.{AuditEvent, AuditLog}
 import com.unibac.lbi.domain.*
@@ -55,9 +56,6 @@ final class Routes[F[_]: Concurrent](
       audit.recent(limit.getOrElse(100)).flatMap(ev => Ok(ev.asJson))
 
   val all: HttpRoutes[F] = health <+> ingestion <+> worklist <+> dashboard <+> auditRoutes
-
-  import org.typelevel.ci.CIStringSyntax
-  private given [F2[_]]: Conversion[String, org.typelevel.ci.CIString] = s => org.typelevel.ci.CIString(s)
 
 object Routes:
   def apply[F[_]: Concurrent](

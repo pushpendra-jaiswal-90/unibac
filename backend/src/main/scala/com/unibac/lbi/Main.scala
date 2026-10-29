@@ -3,7 +3,7 @@ package com.unibac.lbi
 import cats.effect.{IO, IOApp, Resource}
 import com.comcast.ip4s.*
 import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.server.middleware.{Logger, RequestId}
+import org.http4s.server.middleware.{CORS, Logger, RequestId}
 import org.slf4j.LoggerFactory
 
 import com.unibac.lbi.api.Routes
@@ -22,8 +22,11 @@ object Main extends IOApp.Simple:
         ingest   <- Resource.eval(IO.pure(IngestionService.stub[IO](audit)))
         metrics  <- Resource.eval(IO.pure(MetricsService.stub[IO]))
         routes    = Routes(ingest, metrics, audit).all
+        corsPolicy = CORS.policy.withAllowOriginAll
+                                .withAllowMethodsAll
+                                .withAllowHeadersAll
         app       = Logger.httpApp(logHeaders = true, logBody = false)(
-                      RequestId.httpApp(routes.orNotFound)
+                      RequestId.httpApp(corsPolicy(routes).orNotFound)
                     )
         server   <- EmberServerBuilder
                       .default[IO]
