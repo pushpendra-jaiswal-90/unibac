@@ -41,3 +41,4 @@ table.worklist { width: 100%; background: #fff; border-collapse: collapse; borde
 .chat-input { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; }
 .chat-input input { flex: 1; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; }
 .chat-input button { padding: 7px 14px; background: #333; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+.chat-head input.token { padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; width: 150px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }

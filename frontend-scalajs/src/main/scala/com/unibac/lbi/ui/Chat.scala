@@ -16,6 +16,7 @@ object ChatEvent:
 
 final class Chat:
   val backend  = Var("ollama")
+  val token    = Var("")
   val events   = Var(List.empty[ChatEvent])
   val draft    = Var("")
   val status   = Var("disconnected")
@@ -25,11 +26,18 @@ final class Chat:
     sock.foreach(_.close())
     status.set("connecting")
     events.set(Nil)
-    val url = s"ws://localhost:8001/ws?backend=${backend.now()}"
+    val tokenParam =
+      if backend.now() == "anthropic" && token.now().nonEmpty
+      then s"&token=${scala.scalajs.js.URIUtils.encodeURIComponent(token.now())}"
+      else ""
+    val url = s"ws://localhost:8001/ws?backend=${backend.now()}$tokenParam"
     val s = new dom.WebSocket(url)
     sock = Some(s)
     s.onopen    = _ => status.set("ready")
-    s.onclose   = _ => status.set("disconnected")
+    s.onclose   = e =>
+      status.set("disconnected")
+      val reason = e.reason
+      if reason != null && reason.nonEmpty then push(ChatEvent.ErrorEv(reason))
     s.onerror   = _ => status.set("error")
     s.onmessage = e =>
       parse(e.data.toString).toOption.flatMap(_.asObject).foreach(handleFrame)
@@ -75,6 +83,14 @@ final class Chat:
           onChange.mapToValue --> backend,
           option(value := "ollama", "Local (Ollama)"),
           option(value := "anthropic", "Frontier (Anthropic)")
+        ),
+        input(
+          typ := "password",
+          placeholder := "token (frontier only)",
+          cls := "token",
+          value <-- token,
+          onInput.mapToValue --> token,
+          display <-- backend.signal.map(b => if b == "anthropic" then "" else "none")
         ),
         button("Connect", onClick --> (_ => connect())),
         span(cls := "status", child.text <-- status.signal)

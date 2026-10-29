@@ -19,7 +19,7 @@
     sock = new WebSocket(url);
     sock.onmessage = (ev) => app.ports.wsRecv.send(ev.data);
     sock.onopen    = () => app.ports.wsRecv.send(JSON.stringify({ type: "ready" }));
-    sock.onclose   = () => app.ports.wsRecv.send(JSON.stringify({ type: "error", message: "disconnected" }));
+    sock.onclose   = (ev) => app.ports.wsRecv.send(JSON.stringify({ type: "error", message: ev.reason || "disconnected" }));
     sock.onerror   = () => app.ports.wsRecv.send(JSON.stringify({ type: "error", message: "websocket error" }));
   });
   app.ports.wsSend.subscribe((data) => {

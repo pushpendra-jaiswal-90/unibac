@@ -32,8 +32,9 @@ class AgentSession:
     (which may itself fan out into multiple model turns of tool_use → result)
     and emits events as they happen."""
 
-    def __init__(self, backend: Backend = "ollama"):
+    def __init__(self, backend: Backend = "ollama", max_turns: int = MAX_TURNS):
         self.backend: Backend = backend
+        self.max_turns: int = max_turns
         self.messages: list[dict] = []  # provider-shaped message list
 
     async def send(self, user_text: str, emit: Emit) -> None:
@@ -54,7 +55,7 @@ class AgentSession:
         model = os.environ.get("LBI_AGENT_MODEL", "claude-opus-4-7")
         self.messages.append({"role": "user", "content": user_text})
 
-        for _ in range(MAX_TURNS):
+        for _ in range(self.max_turns):
             resp = await asyncio.to_thread(
                 client.messages.create,
                 model=model,
@@ -92,7 +93,7 @@ class AgentSession:
             self.messages.append({"role": "assistant", "content": resp.content})
             self.messages.append({"role": "user", "content": tool_results})
 
-        await emit({"type": "error", "message": f"MAX_TURNS={MAX_TURNS}"})
+        await emit({"type": "error", "message": f"max_turns={self.max_turns}"})
 
     # ---- Ollama (OpenAI-compatible /v1) --------------------------------------
 
@@ -112,7 +113,7 @@ class AgentSession:
                                "parameters": t["input_schema"]}}
                  for t in TOOLS]
 
-        for _ in range(MAX_TURNS):
+        for _ in range(self.max_turns):
             resp = await asyncio.to_thread(
                 client.chat.completions.create,
                 model=model,
@@ -154,7 +155,7 @@ class AgentSession:
                     "content": out if isinstance(out, str) else json.dumps(out),
                 })
 
-        await emit({"type": "error", "message": f"MAX_TURNS={MAX_TURNS}"})
+        await emit({"type": "error", "message": f"max_turns={self.max_turns}"})
 
 
 async def _dispatch(name: str, args: dict) -> tuple[Any, bool]:

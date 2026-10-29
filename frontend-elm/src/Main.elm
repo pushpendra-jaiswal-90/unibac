@@ -75,6 +75,7 @@ type alias Model =
     , selectedLoan : Maybe WorklistItem
     , error : Maybe String
     , chatBackend : String
+    , chatToken : String
     , chatStatus : String
     , chatEvents : List ChatEvent
     , chatDraft : String
@@ -89,6 +90,7 @@ init _ =
       , selectedLoan = Nothing
       , error = Nothing
       , chatBackend = "ollama"
+      , chatToken = ""
       , chatStatus = "disconnected"
       , chatEvents = []
       , chatDraft = ""
@@ -108,6 +110,7 @@ type Msg
     | GotDashboard (Result Http.Error (Dict String Float))
     | Selected WorklistItem
     | ChatBackendChanged String
+    | ChatTokenChanged String
     | ChatConnect
     | ChatDraftChanged String
     | ChatSend
@@ -143,9 +146,20 @@ update msg model =
         ChatBackendChanged b ->
             ( { model | chatBackend = b }, Cmd.none )
 
+        ChatTokenChanged t ->
+            ( { model | chatToken = t }, Cmd.none )
+
         ChatConnect ->
+            let
+                tokenParam =
+                    if model.chatBackend == "anthropic" && model.chatToken /= "" then
+                        "&token=" ++ model.chatToken
+
+                    else
+                        ""
+            in
             ( { model | chatStatus = "connecting", chatEvents = [] }
-            , wsConnect (wsBase ++ "?backend=" ++ model.chatBackend)
+            , wsConnect (wsBase ++ "?backend=" ++ model.chatBackend ++ tokenParam)
             )
 
         ChatDraftChanged s ->
@@ -391,6 +405,18 @@ viewChat model =
                 [ option [ value "ollama", selected (model.chatBackend == "ollama") ] [ text "Local (Ollama)" ]
                 , option [ value "anthropic", selected (model.chatBackend == "anthropic") ] [ text "Frontier (Anthropic)" ]
                 ]
+            , if model.chatBackend == "anthropic" then
+                input
+                    [ type_ "password"
+                    , class "token"
+                    , placeholder "token"
+                    , value model.chatToken
+                    , onInput ChatTokenChanged
+                    ]
+                    []
+
+              else
+                text ""
             , button [ onClick ChatConnect ] [ text "Connect" ]
             , span [ class "status" ] [ text model.chatStatus ]
             ]
